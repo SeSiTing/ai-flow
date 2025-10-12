@@ -49,8 +49,8 @@ curl http://localhost:8001/status
 echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
 
 # 拉取镜像
-docker pull harbor.blacklake.tech/ai/ai-flow-llms:latest
-docker pull harbor.blacklake.tech/ai/ai-flow-ai-coder:latest
+docker pull harbor.blacklake.tech/ai/llms:latest
+docker pull harbor.blacklake.tech/ai/ai-coder:latest
 
 # 启动租户
 ORG_ID=001 FLOW_ID=001 PORT=8001 docker-compose -p ai-flow-001-001 up -d
@@ -123,10 +123,10 @@ docker-compose -p ai-flow-dev restart
 
 ```bash
 # 1. 构建新镜像
-docker build -t harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0 -f ai-coder/Dockerfile ai-coder/
+docker build -t harbor.blacklake.tech/ai/ai-coder:v1.2.0 -f ai-coder/Dockerfile ai-coder/
 
 # 2. 推送镜像
-docker push harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0
+docker push harbor.blacklake.tech/ai/ai-coder:v1.2.0
 
 # 3. 更新运行中的服务
 docker-compose -p ai-flow-001-001 pull ai-coder
@@ -137,10 +137,10 @@ docker-compose -p ai-flow-001-001 up -d ai-coder
 
 ```bash
 # 1. 构建新镜像
-docker build -t harbor.blacklake.tech/ai/ai-flow-llms:v1.2.0 -f llms/Dockerfile llms/
+docker build -t harbor.blacklake.tech/ai/llms:v1.2.0 -f llms/Dockerfile llms/
 
 # 2. 推送镜像
-docker push harbor.blacklake.tech/ai/ai-flow-llms:v1.2.0
+docker push harbor.blacklake.tech/ai/llms:v1.2.0
 
 # 3. 更新运行中的服务
 docker-compose -p ai-flow-001-001 pull llms

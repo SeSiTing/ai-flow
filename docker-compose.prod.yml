@@ -1,10 +1,8 @@
 version: '3.8'
 
+# 生产环境配置（直接拉取镜像，不构建）
 services:
   llms:
-    build:
-      context: ./llms
-      dockerfile: Dockerfile
     image: harbor.blacklake.tech/ai/llms:latest
     container_name: llms-${ORG_ID:-001}-${FLOW_ID:-001}
     environment:
@@ -22,9 +20,6 @@ services:
       start_period: 10s
 
   ai-coder:
-    build:
-      context: ./ai-coder
-      dockerfile: Dockerfile
     image: harbor.blacklake.tech/ai/ai-coder:latest
     container_name: ai-coder-${ORG_ID:-001}-${FLOW_ID:-001}
     ports:
@@ -52,3 +47,4 @@ services:
 networks:
   ai-flow-network:
     driver: bridge
+

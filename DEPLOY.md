@@ -133,12 +133,12 @@ docker image prune -f
 echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
 
 # 构建并推送 llms 镜像
-docker build -t harbor.blacklake.tech/ai/ai-flow-llms:latest -f llms/Dockerfile llms/
-docker push harbor.blacklake.tech/ai/ai-flow-llms:latest
+docker build -t harbor.blacklake.tech/ai/llms:latest -f llms/Dockerfile llms/
+docker push harbor.blacklake.tech/ai/llms:latest
 
 # 构建并推送 ai-coder 镜像
-docker build -t harbor.blacklake.tech/ai/ai-flow-ai-coder:latest -f ai-coder/Dockerfile ai-coder/
-docker push harbor.blacklake.tech/ai/ai-flow-ai-coder:latest
+docker build -t harbor.blacklake.tech/ai/ai-coder:latest -f ai-coder/Dockerfile ai-coder/
+docker push harbor.blacklake.tech/ai/ai-coder:latest
 ```
 
 ### 准备 .env 文件
@@ -160,8 +160,8 @@ EOF
 
 ```bash
 # 拉取镜像
-docker pull harbor.blacklake.tech/ai/ai-flow-llms:latest
-docker pull harbor.blacklake.tech/ai/ai-flow-ai-coder:latest
+docker pull harbor.blacklake.tech/ai/llms:latest
+docker pull harbor.blacklake.tech/ai/ai-coder:latest
 
 # 启动服务（使用 docker-compose）
 ORG_ID=001 FLOW_ID=001 PORT=8001 \
@@ -216,11 +216,11 @@ docker-compose -p ai-flow-dev restart
 # 场景：只修改了 ai-coder 代码
 
 # 1. 重新构建并推送 ai-coder 镜像
-docker build -t harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0 -f ai-coder/Dockerfile ai-coder/
-docker push harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0
+docker build -t harbor.blacklake.tech/ai/ai-coder:v1.2.0 -f ai-coder/Dockerfile ai-coder/
+docker push harbor.blacklake.tech/ai/ai-coder:v1.2.0
 
 # 2. 拉取新镜像
-docker pull harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0
+docker pull harbor.blacklake.tech/ai/ai-coder:v1.2.0
 
 # 3. 只重启 ai-coder 服务（llms 不受影响）
 docker-compose -p ai-flow-001-001 up -d --no-deps --build ai-coder
