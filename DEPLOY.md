@@ -1,6 +1,14 @@
 # 部署文档
 
-## 构建推送
+本文档包含两种部署方案：
+- **方案一**：单镜像部署（快速上线）
+- **方案二**：多镜像 + docker-compose 编排（推荐，支持独立更新）
+
+---
+
+## 方案一：单镜像部署
+
+### 构建推送
 
 ```bash
 # 登录
@@ -84,7 +92,7 @@ for i in {1..5}; do
 done
 ```
 
-## 常用命令
+### 常用命令
 
 ```bash
 # 查看状态
@@ -113,4 +121,158 @@ docker ps --filter "name=ai-flow-*" --format "{{.Names}}" | xargs docker stop
 # 清理
 docker image prune -f
 ```
+
+---
+
+## 方案二：多镜像 + docker-compose 编排（推荐）
+
+### 构建推送
+
+```bash
+# 登录
+echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
+
+# 构建并推送 llms 镜像
+docker build -t harbor.blacklake.tech/ai/ai-flow-llms:latest -f llms/Dockerfile llms/
+docker push harbor.blacklake.tech/ai/ai-flow-llms:latest
+
+# 构建并推送 ai-coder 镜像
+docker build -t harbor.blacklake.tech/ai/ai-flow-ai-coder:latest -f ai-coder/Dockerfile ai-coder/
+docker push harbor.blacklake.tech/ai/ai-flow-ai-coder:latest
+```
+
+### 准备 .env 文件
+
+```bash
+# 创建 .env 文件
+cat > .env << EOF
+# LLMs API 配置（必需）
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+
+# Claude API 配置
+ANTHROPIC_API_KEY=custom
+
+# 注意：ORG_ID、FLOW_ID、PORT 在启动时通过环境变量传递
+EOF
+```
+
+### 单个租户部署
+
+```bash
+# 拉取镜像
+docker pull harbor.blacklake.tech/ai/ai-flow-llms:latest
+docker pull harbor.blacklake.tech/ai/ai-flow-ai-coder:latest
+
+# 启动服务（使用 docker-compose）
+ORG_ID=001 FLOW_ID=001 PORT=8001 \
+  docker-compose -p ai-flow-001-001 up -d
+
+# 查看日志
+docker-compose -p ai-flow-001-001 logs -f
+
+# 停止服务
+docker-compose -p ai-flow-001-001 down
+```
+
+### 多租户部署
+
+```bash
+# 租户 1
+ORG_ID=001 FLOW_ID=001 PORT=8001 \
+  docker-compose -p ai-flow-001-001 up -d
+
+# 租户 2
+ORG_ID=002 FLOW_ID=001 PORT=8002 \
+  docker-compose -p ai-flow-002-001 up -d
+
+# 租户 3
+ORG_ID=003 FLOW_ID=001 PORT=8003 \
+  docker-compose -p ai-flow-003-001 up -d
+
+# 批量部署脚本
+for i in {1..5}; do
+  org=$(printf "%03d" $i)
+  port=$((8000 + i))
+  ORG_ID=${org} FLOW_ID=001 PORT=${port} \
+    docker-compose -p ai-flow-${org}-001 up -d
+done
+```
+
+### 开发调试（挂载源码）
+
+```bash
+# 修改 docker-compose.yml，添加 volumes 挂载
+# 然后启动
+ORG_ID=dev FLOW_ID=001 PORT=8000 \
+  docker-compose -p ai-flow-dev up -d
+
+# 修改本地代码后，重启服务即可生效
+docker-compose -p ai-flow-dev restart
+```
+
+### 单独更新某个服务
+
+```bash
+# 场景：只修改了 ai-coder 代码
+
+# 1. 重新构建并推送 ai-coder 镜像
+docker build -t harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0 -f ai-coder/Dockerfile ai-coder/
+docker push harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0
+
+# 2. 拉取新镜像
+docker pull harbor.blacklake.tech/ai/ai-flow-ai-coder:v1.2.0
+
+# 3. 只重启 ai-coder 服务（llms 不受影响）
+docker-compose -p ai-flow-001-001 up -d --no-deps --build ai-coder
+```
+
+### 常用命令
+
+```bash
+# 查看所有 compose 实例
+docker-compose ls
+
+# 查看特定租户的服务状态
+docker-compose -p ai-flow-001-001 ps
+
+# 查看特定租户的日志
+docker-compose -p ai-flow-001-001 logs -f
+
+# 查看 ai-coder 服务日志
+docker-compose -p ai-flow-001-001 logs -f ai-coder
+
+# 查看 llms 服务日志
+docker-compose -p ai-flow-001-001 logs -f llms
+
+# 重启特定租户
+docker-compose -p ai-flow-001-001 restart
+
+# 停止特定租户
+docker-compose -p ai-flow-001-001 stop
+
+# 删除特定租户
+docker-compose -p ai-flow-001-001 down
+
+# 批量停止所有租户
+docker ps --filter "name=llms-" --format "{{.Names}}" | cut -d'-' -f2-3 | sort -u | \
+  xargs -I {} docker-compose -p ai-flow-{} stop
+
+# 批量删除所有租户
+docker ps -a --filter "name=llms-" --format "{{.Names}}" | cut -d'-' -f2-3 | sort -u | \
+  xargs -I {} docker-compose -p ai-flow-{} down
+
+# 清理未使用的镜像
+docker image prune -f
+```
+
+### 方案对比
+
+| 特性 | 方案一：单镜像 | 方案二：多镜像+compose |
+|------|--------------|---------------------|
+| 部署复杂度 | 简单 | 中等 |
+| 启动速度 | 快（1个容器） | 慢（2个容器） |
+| 更新灵活性 | 差（需重建整个镜像） | 好（可单独更新服务） |
+| 开发调试 | 不便 | 方便（支持 volumes） |
+| 容器数量 | 1个/租户 | 2个/租户 |
+| 适用场景 | 快速上线 | 长期运维 |
 

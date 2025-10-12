@@ -1,30 +1,54 @@
 version: '3.8'
 
 services:
-  ai-flow:
-    build: 
-      context: .
+  llms:
+    build:
+      context: ./llms
       dockerfile: Dockerfile
-    image: sesiting/ai-flow:latest
-    container_name: ai-flow-${ORG_ID:-001}-${FLOW_ID:-001}
+    image: harbor.blacklake.tech/ai/ai-flow-llms:latest
+    container_name: llms-${ORG_ID:-001}-${FLOW_ID:-001}
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    networks:
+      - ai-flow-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  ai-coder:
+    build:
+      context: ./ai-coder
+      dockerfile: Dockerfile
+    image: harbor.blacklake.tech/ai/ai-flow-ai-coder:latest
+    container_name: ai-coder-${ORG_ID:-001}-${FLOW_ID:-001}
     ports:
-      - "${PORT:-8000}:8000"  # ai-coder 端口
-      - "3000:3000"           # llms 端口（固定）
+      - "${PORT:-8000}:8000"
     environment:
       - ORG_ID=${ORG_ID:-001}
       - FLOW_ID=${FLOW_ID:-001}
-      - ANTHROPIC_BASE_URL=http://localhost:3000
+      - ANTHROPIC_BASE_URL=http://llms:3000
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-custom}
+      - PROJECT_ROOT=/app/ai-coder
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - PORT=3000
-      - HOST=0.0.0.0
-    volumes:
-      - ./ai-coder/src:/app/ai-coder/src
-      - ./llms/src:/app/llms/src
+    depends_on:
+      llms:
+        condition: service_healthy
+    networks:
+      - ai-flow-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 20s
+
+networks:
+  ai-flow-network:
+    driver: bridge
