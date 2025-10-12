@@ -46,7 +46,7 @@ curl http://localhost:8001/status
 
 ```bash
 # 登录 Harbor
-echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
+docker login harbor.blacklake.tech
 
 # 拉取镜像
 docker pull harbor.blacklake.tech/ai/llms:latest

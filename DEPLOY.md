@@ -12,7 +12,7 @@
 
 ```bash
 # 登录
-echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
+docker login harbor.blacklake.tech
 
 # 构建推送
 docker build -t harbor.blacklake.tech/ai/ai-flow:latest .
@@ -44,7 +44,7 @@ EOF
 
 ```bash
 # 登录拉取
-echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
+docker login harbor.blacklake.tech
 docker pull harbor.blacklake.tech/ai/ai-flow:latest
 
 # 方式 1：使用 .env 文件 + 动态参数（推荐）
@@ -130,7 +130,7 @@ docker image prune -f
 
 ```bash
 # 登录
-echo "Gitlabci123" | docker login --username gitlabci --password-stdin harbor.blacklake.tech
+docker login harbor.blacklake.tech
 
 # 构建并推送 llms 镜像
 docker build -t harbor.blacklake.tech/ai/llms:latest -f llms/Dockerfile llms/
