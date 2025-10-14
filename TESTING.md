@@ -32,6 +32,10 @@ http POST http://localhost:8000/chat message="你好"
 
 ### 启动容器
 ```bash
+# 使用启动脚本（推荐）
+./run-compose.sh -o 001 -f 001
+
+# 或手动启动
 docker run -d \
   --name ai-flow \
   -p 8000:8000 \
@@ -41,7 +45,10 @@ docker run -d \
 
 ### 关闭容器
 ```bash
-# 停止容器
+# 使用启动脚本停止
+docker-compose -p ai-flow-001-001 down
+
+# 或手动停止容器
 docker stop ai-flow
 
 # 停止并删除容器
@@ -53,7 +60,10 @@ docker stop ai-flow && docker rm ai-flow
 # 查看运行中的容器
 docker ps
 
-# 查看容器日志
+# 查看容器日志（使用启动脚本）
+docker-compose -p ai-flow-001-001 logs -f
+
+# 查看容器日志（手动启动）
 docker logs -f ai-flow
 ```
 
@@ -65,7 +75,7 @@ docker logs -f ai-flow
 lsof -i :8000
 
 # 使用不同端口启动
-docker run -d --name ai-flow -p 8001:8000 --env-file .env sesiting/ai-flow:latest
+./run-compose.sh -o 001 -f 001 -p 8001
 ```
 
 ### 服务启动问题

@@ -68,4 +68,6 @@ temp/
 tmp/
 *.tmp
 *.temp
+workspace/
+
 

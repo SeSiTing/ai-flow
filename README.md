@@ -20,7 +20,7 @@ export ORG_ID=001
 export FLOW_ID=001
 
 # 4. 使用启动脚本（推荐）
-./start.sh
+./run-compose.sh -o 001 -f 001
 
 # 或者手动启动各服务
 # cd llms && npm install && npm run build && npm start &
@@ -30,23 +30,33 @@ export FLOW_ID=001
 curl http://localhost:8000/status
 ```
 
-### Docker 部署
+### Docker Compose 部署（推荐）
 
 ```bash
-# 构建镜像
-docker build -t sesiting/ai-flow .
+# 1. 配置环境变量
+cp env.example .env
+# 编辑 .env，填入 OPENROUTER_API_KEY
 
-# 启动容器（指定组织和流程 ID）
-docker run -d \
-  --name ai-flow \
-  -p 8000:8000 \
-  -e ORG_ID=001 \
-  -e FLOW_ID=001 \
-  --env-file .env \
-  sesiting/ai-flow
+# 2. 使用启动脚本（推荐）
+./run-compose.sh -o 001 -f 001
 
-# 验证服务
+# 3. 验证服务
 curl http://localhost:8000/status
+
+# 4. 查看日志
+docker-compose -p ai-flow-001-001 logs -f
+```
+
+**高级用法：**
+```bash
+# 使用外部 llms 服务
+# .env 中配置: ANTHROPIC_BASE_URL=http://external-llms:3009
+./run-compose.sh -o 001 -f 001 -l false
+
+# 指定端口
+./run-compose.sh -o 001 -f 001 -p 8080
+
+# 详细文档见 DEPLOY.md
 ```
 
 ## 🔐 环境配置

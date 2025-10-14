@@ -1,19 +1,20 @@
-version: '3.8'
-
 # 生产环境配置（直接拉取镜像，不构建）
+# 支持多种镜像源：
+# - Harbor: harbor.blacklake.tech/ai/llms:latest
+# - Docker Hub: sesiting/llms:latest
 services:
   llms:
+    profiles: ["llms"]
     image: harbor.blacklake.tech/ai/llms:latest
     container_name: llms-${ORG_ID:-001}-${FLOW_ID:-001}
     environment:
-      - PORT=3009
       - HOST=0.0.0.0
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     networks:
       - ai-flow-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3009/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -24,16 +25,18 @@ services:
     container_name: ai-coder-${ORG_ID:-001}-${FLOW_ID:-001}
     ports:
       - "${PORT:-8000}:8000"
+    volumes:
+      - ./workspace:/workspace
     environment:
-      - ORG_ID=${ORG_ID:-001}
-      - FLOW_ID=${FLOW_ID:-001}
-      - ANTHROPIC_BASE_URL=http://llms:3009
+      - ORG_ID=${ORG_ID}
+      - FLOW_ID=${FLOW_ID}
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-http://llms:3000}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-custom}
-      - PROJECT_ROOT=/app/ai-coder
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - PROJECT_ROOT=/workspace
     depends_on:
       llms:
         condition: service_healthy
+        required: false
     networks:
       - ai-flow-network
     restart: unless-stopped
