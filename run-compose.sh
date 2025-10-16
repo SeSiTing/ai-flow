@@ -2,8 +2,8 @@
 
 # AI Flow Docker Compose 启动脚本
 # 用法: ./run-compose.sh [OPTIONS] [ORG_ID] [FLOW_ID] [USE_LLMS]
-# 示例: ./run-compose.sh -o 001 -f 002 -p 8080 -l true
-# 示例: ./run-compose.sh 001 001 true
+# 示例: ./run-compose.sh -o 001 -f 002 -p 8080          # 使用外部 llms（默认）
+# 示例: ./run-compose.sh -o 001 -f 002 -l true         # 使用内部 llms
 # 参数:
 #   -o, --org     组织ID
 #   -f, --flow    流程ID
@@ -16,7 +16,7 @@ ORG_ID="001"
 FLOW_ID="001"
 PORT="8000"
 PROJECT_NAME=""
-USE_LLMS="true"
+USE_LLMS="false"
 ENV="dev"
 
 # 解析命令行参数
@@ -57,8 +57,8 @@ while [[ $# -gt 0 ]]; do
             echo "  -l, --llms    是否使用内部 llms（true/false）"
             echo "  -e, --env     环境配置（dev/prod）"
             echo "  -h, --help    显示帮助信息"
-            echo "示例: $0 -o 001 -f 002 -p 8080 -l true"
-            echo "示例: $0 001 001 true"
+            echo "示例: $0 -o 001 -f 002 -p 8080          # 使用外部 llms（默认）"
+            echo "示例: $0 -o 001 -f 002 -l true         # 使用内部 llms"
             exit 0
             ;;
         -*)
@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
                 ORG_ID="$1"
             elif [[ "$FLOW_ID" == "001" ]]; then
                 FLOW_ID="$1"
-            elif [[ "$USE_LLMS" == "true" ]]; then
+            elif [[ "$USE_LLMS" == "false" ]]; then
                 USE_LLMS="$1"
             elif [[ "$ENV" == "dev" ]]; then
                 ENV="$1"

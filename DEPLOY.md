@@ -37,7 +37,7 @@ docker push sesiting/ai-coder:latest
 | `-f` | `--flow` | 流程ID | 001 |
 | `-p` | `--port` | 端口号 | 8000 |
 | `-n` | `--name` | 项目名 | ai-flow-{ORG_ID}-{FLOW_ID} |
-| `-l` | `--llms` | 是否启动内部 llms 服务 | true（可省略） |
+| `-l` | `--llms` | 是否启动内部 llms 服务 | false（可省略） |
 | `-e` | `--env` | 环境配置（dev/prod） | dev |
 | `-h` | `--help` | 显示帮助信息 | - |
 
@@ -56,45 +56,45 @@ docker push sesiting/ai-coder:latest
 ### 1. 单租户部署（推荐）
 
 ```bash
-# 开发环境部署（使用内部 llms）
+# 开发环境部署（使用外部 llms，默认）
 cat > .env << EOF
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+ANTHROPIC_BASE_URL=http://external-llms:3009
 EOF
 ./run-compose.sh -o 001 -f 001 -e dev
 
-# 生产环境部署（使用内部 llms）
+# 生产环境部署（使用外部 llms，默认）
 cat > .env << EOF
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+ANTHROPIC_BASE_URL=http://external-llms:3009
 EOF
 ./run-compose.sh -o 001 -f 001 -e prod
 
-# 使用外部 llms（开发环境）
+# 使用内部 llms（开发环境）
 cat > .env << EOF
-ANTHROPIC_BASE_URL=http://external-llms:3009
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
 EOF
-./run-compose.sh -o 001 -f 001 -e dev -l false
+./run-compose.sh -o 001 -f 001 -e dev -l true
 
-# 使用外部 llms（生产环境）
+# 使用内部 llms（生产环境）
 cat > .env << EOF
-ANTHROPIC_BASE_URL=http://external-llms:3009
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
 EOF
-./run-compose.sh -o 001 -f 001 -e prod -l false
+./run-compose.sh -o 001 -f 001 -e prod -l true
 ```
 
 ### 2. 多租户部署
 
 ```bash
-# 租户 1（开发环境，启动 llms）
+# 租户 1（开发环境，使用外部 llms）
 ./run-compose.sh -o 001 -f 001 -e dev
 
-# 租户 1（生产环境，启动 llms）
+# 租户 1（生产环境，使用外部 llms）
 ./run-compose.sh -o 001 -f 001 -e prod
 
-# 租户 2（开发环境，共享 llms）
-./run-compose.sh -o 002 -f 001 -e dev -l false
+# 租户 2（开发环境，使用内部 llms）
+./run-compose.sh -o 002 -f 001 -e dev -l true
 
-# 租户 2（生产环境，共享 llms）
-./run-compose.sh -o 002 -f 001 -e prod -l false
+# 租户 2（生产环境，使用内部 llms）
+./run-compose.sh -o 002 -f 001 -e prod -l true
 
 # 租户 3（开发环境，不同端口）
 ./run-compose.sh -o 003 -f 001 -e dev -p 8080
@@ -112,28 +112,24 @@ cd ai-coder
 
 ## 使用场景
 
-### 场景 1: 启动内部 llms 服务
+### 场景 1: 使用外部 llms 服务（默认）
 ```bash
-# 开发环境（省略 -l true，默认启动内部 llms）
+# 开发环境（省略 -l false，默认使用外部 llms）
 ./run-compose.sh -o 001 -f 001 -e dev
 
-# 生产环境（省略 -l true，默认启动内部 llms）
+# 生产环境（省略 -l false，默认使用外部 llms）
 ./run-compose.sh -o 001 -f 001 -e prod
-
-# 或显式指定
-./run-compose.sh -o 001 -f 001 -e dev -l true
-./run-compose.sh -o 001 -f 001 -e prod -l true
 ```
 
-### 场景 2: 不启动内部 llms（使用外部 llms）
+### 场景 2: 启动内部 llms 服务
 ```bash
 # 开发环境
-# .env 配置: ANTHROPIC_BASE_URL=http://external-llms:3009
-./run-compose.sh -o 001 -f 001 -e dev -l false
+# .env 配置: OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+./run-compose.sh -o 001 -f 001 -e dev -l true
 
 # 生产环境
-# .env 配置: ANTHROPIC_BASE_URL=http://external-llms:3009
-./run-compose.sh -o 001 -f 001 -e prod -l false
+# .env 配置: OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+./run-compose.sh -o 001 -f 001 -e prod -l true
 ```
 
 ### 场景 3: 共享 llms 实例
@@ -144,26 +140,26 @@ cd ai-coder
 # 主实例（生产环境，启动内部 llms）
 ./run-compose.sh -o 001 -f 001 -e prod -l true
 
-# 共享实例（开发环境，不启动内部 llms，使用主实例的 llms）
+# 共享实例（开发环境，使用外部 llms，连接主实例）
 # .env 配置: ANTHROPIC_BASE_URL=http://llms:3000
-./run-compose.sh -o 002 -f 001 -e dev -l false
+./run-compose.sh -o 002 -f 001 -e dev
 
-# 共享实例（生产环境，不启动内部 llms，使用主实例的 llms）
+# 共享实例（生产环境，使用外部 llms，连接主实例）
 # .env 配置: ANTHROPIC_BASE_URL=http://llms:3000
-./run-compose.sh -o 002 -f 001 -e prod -l false
+./run-compose.sh -o 002 -f 001 -e prod
 ```
 
 ### 场景 4: 多端口部署
 ```bash
 # 开发环境多端口部署
-./run-compose.sh -o 001 -f 001 -e dev -p 8001 -l false
-./run-compose.sh -o 001 -f 002 -e dev -p 8002 -l false
-./run-compose.sh -o 002 -f 001 -e dev -p 8003 -l false
+./run-compose.sh -o 001 -f 001 -e dev -p 8001
+./run-compose.sh -o 001 -f 002 -e dev -p 8002
+./run-compose.sh -o 002 -f 001 -e dev -p 8003
 
 # 生产环境多端口部署
-./run-compose.sh -o 001 -f 001 -e prod -p 8001 -l false
-./run-compose.sh -o 001 -f 002 -e prod -p 8002 -l false
-./run-compose.sh -o 002 -f 001 -e prod -p 8003 -l false
+./run-compose.sh -o 001 -f 001 -e prod -p 8001
+./run-compose.sh -o 001 -f 002 -e prod -p 8002
+./run-compose.sh -o 002 -f 001 -e prod -p 8003
 ```
 
 ## 常用命令

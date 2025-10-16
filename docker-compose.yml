@@ -17,7 +17,9 @@ services:
       start_period: 10s
 
   ai-coder:
-    image: sesiting/ai-coder:latest
+    build:
+      context: ./ai-coder
+      dockerfile: Dockerfile
     container_name: ai-coder-${ORG_ID:-001}-${FLOW_ID:-001}
     ports:
       - "${PORT:-8000}:8000"
