@@ -17,6 +17,7 @@ FLOW_ID="001"
 PORT="8000"
 PROJECT_NAME=""
 USE_LLMS="true"
+ENV="dev"
 
 # 解析命令行参数
 while [[ $# -gt 0 ]]; do
@@ -41,6 +42,10 @@ while [[ $# -gt 0 ]]; do
             USE_LLMS="$2"
             shift 2
             ;;
+        -e|--env)
+            ENV="$2"
+            shift 2
+            ;;
         -h|--help)
             echo "AI Flow Docker Compose 启动脚本"
             echo "用法: $0 [OPTIONS] [ORG_ID] [FLOW_ID] [USE_LLMS]"
@@ -50,6 +55,7 @@ while [[ $# -gt 0 ]]; do
             echo "  -p, --port    端口号"
             echo "  -n, --name    项目名（可选）"
             echo "  -l, --llms    是否使用内部 llms（true/false）"
+            echo "  -e, --env     环境配置（dev/prod）"
             echo "  -h, --help    显示帮助信息"
             echo "示例: $0 -o 001 -f 002 -p 8080 -l true"
             echo "示例: $0 001 001 true"
@@ -68,6 +74,8 @@ while [[ $# -gt 0 ]]; do
                 FLOW_ID="$1"
             elif [[ "$USE_LLMS" == "true" ]]; then
                 USE_LLMS="$1"
+            elif [[ "$ENV" == "dev" ]]; then
+                ENV="$1"
             fi
             shift
             ;;
@@ -82,10 +90,18 @@ fi
 # 导出环境变量
 export ORG_ID FLOW_ID PORT
 
+# 确定配置文件
+if [[ "$ENV" == "prod" ]]; then
+    COMPOSE_FILE="docker-compose.prod.yml"
+else
+    COMPOSE_FILE="docker-compose.yml"
+fi
+
 echo "🚀 启动 AI Flow 服务..."
 echo "   组织ID: ${ORG_ID}"
 echo "   流程ID: ${FLOW_ID}"
 echo "   项目名: ${PROJECT_NAME}"
+echo "   环境配置: ${ENV} (${COMPOSE_FILE})"
 echo "   使用内部LLMs: ${USE_LLMS}"
 
 # 检查 .env 文件
@@ -99,21 +115,21 @@ fi
 # 根据是否使用 llms 决定启动命令
 if [ "$USE_LLMS" = "true" ]; then
     echo "📡 启动服务 (含内部 llms)..."
-    docker-compose --profile llms -p ${PROJECT_NAME} up -d --pull never
+    docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never
 else
     echo "📡 启动服务 (使用外部 llms)..."
-    docker-compose -p ${PROJECT_NAME} up -d --pull never
+    docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never
 fi
 
 # 检查启动状态
 sleep 3
 echo "🔍 检查服务状态..."
-docker-compose -p ${PROJECT_NAME} ps
+docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps
 
 echo "✅ 服务启动完成: ${PROJECT_NAME}"
 echo ""
 echo "📊 管理命令:"
-echo "   查看日志: docker-compose -p ${PROJECT_NAME} logs -f"
-echo "   查看状态: docker-compose -p ${PROJECT_NAME} ps"
-echo "   停止服务: docker-compose -p ${PROJECT_NAME} down"
-echo "   重启服务: docker-compose -p ${PROJECT_NAME} restart"
+echo "   查看日志: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} logs -f"
+echo "   查看状态: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps"
+echo "   停止服务: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
+echo "   重启服务: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} restart"

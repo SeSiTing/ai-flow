@@ -116,3 +116,42 @@ time http POST http://localhost:8000/chat message="Hello"
 ab -n 100 -c 10 -p test.json -T application/json http://localhost:8000/chat
 ```
 
+## 🎯 常用测试场景
+
+### 远程测试
+使用 `http://10.83.20.125:8000/chat`（替换为实际服务器 IP）
+
+#### 1. 基础问候
+```bash
+http POST http://10.83.20.125:8000/chat message="你好"
+```
+
+#### 2. 生成代码
+```bash
+http POST http://10.83.20.125:8000/chat message="生成一个 hello.py"
+```
+
+#### 3. 修改代码
+```bash
+http POST http://10.83.20.125:8000/chat message="修改 hello.py，添加输入姓名功能"
+```
+
+### curl 替代命令
+
+```bash
+# 基础问候
+curl -X POST http://10.83.20.125:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "你好"}'
+
+# 生成代码
+curl -X POST http://10.83.20.125:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "生成一个 hello.py"}'
+
+# 修改代码
+curl -X POST http://10.83.20.125:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "修改 hello.py，添加输入姓名功能"}'
+```
+

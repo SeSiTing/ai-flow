@@ -38,6 +38,7 @@ docker push sesiting/ai-coder:latest
 | `-p` | `--port` | 端口号 | 8000 |
 | `-n` | `--name` | 项目名 | ai-flow-{ORG_ID}-{FLOW_ID} |
 | `-l` | `--llms` | 是否启动内部 llms 服务 | true（可省略） |
+| `-e` | `--env` | 环境配置（dev/prod） | dev |
 | `-h` | `--help` | 显示帮助信息 | - |
 
 ### ai-coder/run-docker.sh 参数
@@ -55,30 +56,51 @@ docker push sesiting/ai-coder:latest
 ### 1. 单租户部署（推荐）
 
 ```bash
-# 使用内部 llms（需要 OPENROUTER_API_KEY）
+# 开发环境部署（使用内部 llms）
 cat > .env << EOF
 OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
 EOF
-./run-compose.sh -o 001 -f 001
+./run-compose.sh -o 001 -f 001 -e dev
 
-# 使用外部 llms（需要 ANTHROPIC_BASE_URL）
+# 生产环境部署（使用内部 llms）
+cat > .env << EOF
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
+EOF
+./run-compose.sh -o 001 -f 001 -e prod
+
+# 使用外部 llms（开发环境）
 cat > .env << EOF
 ANTHROPIC_BASE_URL=http://external-llms:3009
 EOF
-./run-compose.sh -o 001 -f 001 -l false
+./run-compose.sh -o 001 -f 001 -e dev -l false
+
+# 使用外部 llms（生产环境）
+cat > .env << EOF
+ANTHROPIC_BASE_URL=http://external-llms:3009
+EOF
+./run-compose.sh -o 001 -f 001 -e prod -l false
 ```
 
 ### 2. 多租户部署
 
 ```bash
-# 租户 1（启动 llms，可省略 -l true）
-./run-compose.sh -o 001 -f 001
+# 租户 1（开发环境，启动 llms）
+./run-compose.sh -o 001 -f 001 -e dev
 
-# 租户 2（共享 llms）
-./run-compose.sh -o 002 -f 001 -l false
+# 租户 1（生产环境，启动 llms）
+./run-compose.sh -o 001 -f 001 -e prod
 
-# 租户 3（不同端口，可省略 -l true）
-./run-compose.sh -o 003 -f 001 -p 8080
+# 租户 2（开发环境，共享 llms）
+./run-compose.sh -o 002 -f 001 -e dev -l false
+
+# 租户 2（生产环境，共享 llms）
+./run-compose.sh -o 002 -f 001 -e prod -l false
+
+# 租户 3（开发环境，不同端口）
+./run-compose.sh -o 003 -f 001 -e dev -p 8080
+
+# 租户 3（生产环境，不同端口）
+./run-compose.sh -o 003 -f 001 -e prod -p 8080
 ```
 
 ### 3. AI Coder 独立部署
@@ -92,34 +114,56 @@ cd ai-coder
 
 ### 场景 1: 启动内部 llms 服务
 ```bash
-# 省略 -l true（默认启动内部 llms）
-./run-compose.sh -o 001 -f 001
+# 开发环境（省略 -l true，默认启动内部 llms）
+./run-compose.sh -o 001 -f 001 -e dev
+
+# 生产环境（省略 -l true，默认启动内部 llms）
+./run-compose.sh -o 001 -f 001 -e prod
 
 # 或显式指定
-./run-compose.sh -o 001 -f 001 -l true
+./run-compose.sh -o 001 -f 001 -e dev -l true
+./run-compose.sh -o 001 -f 001 -e prod -l true
 ```
 
 ### 场景 2: 不启动内部 llms（使用外部 llms）
 ```bash
+# 开发环境
 # .env 配置: ANTHROPIC_BASE_URL=http://external-llms:3009
-./run-compose.sh -o 001 -f 001 -l false
+./run-compose.sh -o 001 -f 001 -e dev -l false
+
+# 生产环境
+# .env 配置: ANTHROPIC_BASE_URL=http://external-llms:3009
+./run-compose.sh -o 001 -f 001 -e prod -l false
 ```
 
 ### 场景 3: 共享 llms 实例
 ```bash
-# 主实例（启动内部 llms）
-./run-compose.sh -o 001 -f 001 -l true
+# 主实例（开发环境，启动内部 llms）
+./run-compose.sh -o 001 -f 001 -e dev -l true
 
-# 共享实例（不启动内部 llms，使用主实例的 llms）
+# 主实例（生产环境，启动内部 llms）
+./run-compose.sh -o 001 -f 001 -e prod -l true
+
+# 共享实例（开发环境，不启动内部 llms，使用主实例的 llms）
 # .env 配置: ANTHROPIC_BASE_URL=http://llms:3000
-./run-compose.sh -o 002 -f 001 -l false
+./run-compose.sh -o 002 -f 001 -e dev -l false
+
+# 共享实例（生产环境，不启动内部 llms，使用主实例的 llms）
+# .env 配置: ANTHROPIC_BASE_URL=http://llms:3000
+./run-compose.sh -o 002 -f 001 -e prod -l false
 ```
 
 ### 场景 4: 多端口部署
 ```bash
-./run-compose.sh -o 001 -f 001 -p 8001 -l true
-./run-compose.sh -o 001 -f 002 -p 8002 -l true
-./run-compose.sh -o 002 -f 001 -p 8003 -l true
+# 开发环境多端口部署
+./run-compose.sh -o 001 -f 001 -e dev -p 8001 -l false
+./run-compose.sh -o 001 -f 002 -e dev -p 8002 -l false
+./run-compose.sh -o 002 -f 001 -e dev -p 8003 -l false
+
+# 生产环境多端口部署
+./run-compose.sh -o 001 -f 001 -e prod -p 8001 -l false
+./run-compose.sh -o 001 -f 002 -e prod -p 8002 -l false
+./run-compose.sh -o 002 -f 001 -e prod -p 8003 -l false
 ```
 
 ## 常用命令
@@ -129,18 +173,39 @@ cd ai-coder
 ./run-compose.sh --help
 cd ai-coder && ./run-docker.sh --help
 
-# 查看服务状态
-docker-compose -p ai-flow-001-001 ps
+# 查看服务状态（开发环境）
+docker compose -f docker-compose.yml -p ai-flow-001-001 ps
 
-# 查看日志
-docker-compose -p ai-flow-001-001 logs -f
+# 查看服务状态（生产环境）
+docker compose -f docker-compose.prod.yml -p ai-flow-001-001 ps
 
-# 停止服务
-docker-compose -p ai-flow-001-001 down
+# 查看日志（开发环境）
+docker compose -f docker-compose.yml -p ai-flow-001-001 logs -f
+
+# 查看日志（生产环境）
+docker compose -f docker-compose.prod.yml -p ai-flow-001-001 logs -f
+
+# 停止服务（开发环境）
+docker compose -f docker-compose.yml -p ai-flow-001-001 down
+
+# 停止服务（生产环境）
+docker compose -f docker-compose.prod.yml -p ai-flow-001-001 down
 
 # 查看所有租户
 docker ps --filter "name=ai-coder-" --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
 ```
+
+## 环境配置说明
+
+### 开发环境（dev）
+- 使用 `docker-compose.yml` 配置文件
+- 支持本地构建镜像
+- 适合开发和测试
+
+### 生产环境（prod）
+- 使用 `docker-compose.prod.yml` 配置文件
+- 直接拉取预构建镜像
+- 适合生产部署
 
 ## 环境变量
 
