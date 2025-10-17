@@ -6,7 +6,7 @@ services:
   llms:
     profiles: ["llms"]
     image: harbor.blacklake.tech/ai/llms:latest
-    container_name: llms-${ORG_ID:-001}-${FLOW_ID:-001}
+    container_name: llms-${ORG_ID:-default}-${FLOW_ID:-default}
     environment:
       - HOST=0.0.0.0
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
@@ -22,7 +22,7 @@ services:
 
   ai-coder:
     image: harbor.blacklake.tech/ai/ai-coder:latest
-    container_name: ai-coder-${ORG_ID:-001}-${FLOW_ID:-001}
+    container_name: ai-coder-${ORG_ID:-default}-${FLOW_ID:-default}
     ports:
       - "${PORT:-8000}:8000"
     volumes:
