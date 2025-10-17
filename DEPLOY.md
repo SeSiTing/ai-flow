@@ -3,7 +3,8 @@
 ## 镜像仓库
 
 **LLMs 服务：** `sesiting/llms:latest`  
-**AI Coder 服务：** `sesiting/ai-coder:latest`
+**AI Coder 服务：** `sesiting/ai-coder:latest`  
+**OP MCP Tools 服务：** `sesiting/op-mcp:latest`
 
 ## 快速构建
 
@@ -15,6 +16,10 @@ docker push sesiting/llms:latest
 # 构建并推送 AI Coder
 docker build -t sesiting/ai-coder:latest -f ai-coder/Dockerfile ai-coder/
 docker push sesiting/ai-coder:latest
+
+# 构建并推送 OP MCP Tools
+docker build -t sesiting/op-mcp:latest -f op-mcp/Dockerfile op-mcp/
+docker push sesiting/op-mcp:latest
 ```
 
 ## 启动脚本
@@ -123,8 +128,68 @@ docker compose -f docker-compose.yml -p ai-flow-default-default logs -f
 | `ANTHROPIC_BASE_URL` | LLMs 服务地址 | `http://llms:3000` |
 | `ANTHROPIC_API_KEY` | Claude API Key | `custom` |
 
+## OP MCP Tools 独立部署
+
+OP MCP Tools 是一个独立的服务，提供 AI Agent 所需的工具支持。
+
+### 独立部署
+
+```bash
+# 拉取镜像
+docker pull sesiting/op-mcp:latest
+
+# 启动服务
+docker run -d \
+  --name op-mcp \
+  -p 8008:8008 \
+  --restart unless-stopped \
+  sesiting/op-mcp:latest
+```
+
+### 验证服务
+
+```bash
+# 健康检查
+curl http://localhost:8008/health
+
+# MCP Inspector UI
+# 访问 http://localhost:8008/mcp
+```
+
+### 与 AI Coder 集成
+
+OP MCP Tools 是独立服务，需要手动配置：
+
+1. **启动 OP MCP Tools 服务**
+   ```bash
+   docker run -d --name op-mcp -p 8008:8008 op-mcp:latest
+   ```
+
+2. **在 AI Coder 容器中配置 MCP**
+   ```bash
+   # 进入 AI Coder 容器
+   docker exec -it ai-coder-001-001 bash
+   
+   # 配置 MCP 服务器
+   claude mcp add-json op '{"type":"http","url":"http://op-mcp:8008"}'
+   ```
+
+3. **验证配置**
+   ```bash
+   claude mcp list
+   ```
+
+**注意**：如果 AI Coder 和 OP MCP Tools 在不同机器上，需要修改 URL 为实际的服务地址。
+
+### 工具列表
+
+- `execute_sql_tool`：执行 SQL 查询
+- `query_api_info_tool`：查询 API 元数据
+- `generate_ids_tool`：生成唯一 ID
+
 ## 端口说明
 
 - **内部 llms**: 端口 3000
 - **外部 llms**: 建议使用 3009
 - **ai-coder**: 端口 8000（可自定义）
+- **op-mcp**: 端口 8008
