@@ -38,7 +38,7 @@ docker push sesiting/ai-coder:latest
 | `-p` | `--port` | 端口号 | 8000 |
 | `-n` | `--name` | 项目名 | ai-flow-{ORG_ID}-{FLOW_ID} |
 | `-l` | `--llms` | 是否启动内部 llms 服务 | false（可省略） |
-| `-e` | `--env` | 环境配置（dev/prod） | dev |
+| `-e` | `--env` | 环境配置（dev/prod） | 空（使用通用配置） |
 | `-h` | `--help` | 显示帮助信息 | - |
 
 ### ai-coder/run-docker.sh 参数
@@ -193,13 +193,21 @@ docker ps --filter "name=ai-coder-" --format "table {{.Names}}\t{{.Ports}}\t{{.S
 
 ## 环境配置说明
 
-### 开发环境（dev）
+## 环境配置说明
+
+### 通用配置（默认）
 - 使用 `docker-compose.yml` 配置文件
-- 支持本地构建镜像
-- 适合开发和测试
+- 不指定 `-e` 参数时的默认选择
+- 适合大多数场景
+
+### 开发环境（dev）
+- 使用 `docker-compose.dev.yml` 配置文件
+- 指定 `-e dev` 时使用
+- 适合开发和测试（文件预留，暂未创建）
 
 ### 生产环境（prod）
 - 使用 `docker-compose.prod.yml` 配置文件
+- 指定 `-e prod` 时使用
 - 直接拉取预构建镜像
 - 适合生产部署
 

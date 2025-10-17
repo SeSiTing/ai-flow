@@ -17,7 +17,7 @@ FLOW_ID="001"
 PORT="8000"
 PROJECT_NAME=""
 USE_LLMS="false"
-ENV="dev"
+ENV=""
 
 # 解析命令行参数
 while [[ $# -gt 0 ]]; do
@@ -74,7 +74,7 @@ while [[ $# -gt 0 ]]; do
                 FLOW_ID="$1"
             elif [[ "$USE_LLMS" == "false" ]]; then
                 USE_LLMS="$1"
-            elif [[ "$ENV" == "dev" ]]; then
+            elif [[ -z "$ENV" ]]; then
                 ENV="$1"
             fi
             shift
@@ -93,6 +93,8 @@ export ORG_ID FLOW_ID PORT
 # 确定配置文件
 if [[ "$ENV" == "prod" ]]; then
     COMPOSE_FILE="docker-compose.prod.yml"
+elif [[ "$ENV" == "dev" ]]; then
+    COMPOSE_FILE="docker-compose.dev.yml"
 else
     COMPOSE_FILE="docker-compose.yml"
 fi
