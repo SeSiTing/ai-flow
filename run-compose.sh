@@ -147,9 +147,11 @@ case "$COMMAND" in
         # 根据是否使用 llms 决定启动命令
         if [ "$USE_LLMS" = "true" ]; then
             echo "📡 启动服务 (含内部 llms)..."
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never"
             docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never
         else
             echo "📡 启动服务 (使用外部 llms)..."
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never"
             docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never
         fi
         
@@ -165,6 +167,7 @@ case "$COMMAND" in
         echo "   项目名: ${PROJECT_NAME}"
         echo "   环境配置: ${ENV} (${COMPOSE_FILE})"
         
+        echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
         docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down
         echo "✅ 服务已关闭: ${PROJECT_NAME}"
         ;;
@@ -176,9 +179,11 @@ case "$COMMAND" in
         
         if [ "$USE_LLMS" = "true" ]; then
             echo "📦 构建镜像 (含内部 llms)..."
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build"
             docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build
         else
             echo "📦 构建镜像 (使用外部 llms)..."
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build"
             docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build
         fi
         echo "✅ 镜像构建完成: ${PROJECT_NAME}"
@@ -192,17 +197,22 @@ case "$COMMAND" in
         
         # 先停止并删除容器
         echo "🛑 停止服务..."
+        echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
         docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down
         
         # 重新构建并启动服务（确保代码更新生效）
         echo "🔨 重新构建镜像..."
         if [ "$USE_LLMS" = "true" ]; then
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build"
             docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build
             echo "🚀 重新启动服务 (含内部 llms)..."
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --force-recreate"
             docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --force-recreate
         else
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build"
             docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build
             echo "🚀 重新启动服务 (使用外部 llms)..."
+            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --force-recreate"
             docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --force-recreate
         fi
         
