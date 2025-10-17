@@ -33,6 +33,7 @@ services:
       - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-http://llms:3000}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-custom}
       - PROJECT_ROOT=/workspace
+      - CLAUDE_CONFIG_DIR=/workspace/code/flow/o_${ORG_ID}/f_${FLOW_ID}/.claude
     depends_on:
       llms:
         condition: service_healthy
