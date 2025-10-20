@@ -158,7 +158,7 @@ curl http://localhost:8008/health
 
 ### 与 AI Coder 集成
 
-OP MCP Tools 是独立服务，需要手动配置：
+OP MCP Tools 是独立的 MCP 服务提供者，需要手动配置：
 
 1. **启动 OP MCP Tools 服务**
    ```bash
