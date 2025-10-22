@@ -2,23 +2,33 @@
 
 ## 镜像仓库
 
-**LLMs 服务：** `sesiting/llms:latest`  
-**AI Coder 服务：** `sesiting/ai-coder:latest`  
-**OP MCP Tools 服务：** `sesiting/op-mcp:latest`
+**LLMs 服务：** `sesiting/llms:latest` / `sesiting/llms:${tag}`  
+**AI Coder 服务：** `sesiting/ai-coder:latest` / `sesiting/ai-coder:${tag}`  
+**OP MCP Tools 服务：** `sesiting/op-mcp:latest` / `sesiting/op-mcp:${tag}`
 
 ## 快速构建
 
+### 环境变量设置
+
 ```bash
-# 构建并推送 LLMs
-docker build -t sesiting/llms:latest -f llms/Dockerfile llms/
+# 设置版本号（修改此处即可）
+export tag=1.0.0
+```
+
+```bash
+# 构建并推送 LLMs（同时打两个标签）
+docker build -t sesiting/llms:${tag} -t sesiting/llms:latest -f llms/Dockerfile llms/
+docker push sesiting/llms:${tag}
 docker push sesiting/llms:latest
 
-# 构建并推送 AI Coder
-docker build -t sesiting/ai-coder:latest -f ai-coder/Dockerfile ai-coder/
+# 构建并推送 AI Coder（同时打两个标签）
+docker build -t sesiting/ai-coder:${tag} -t sesiting/ai-coder:latest -f ai-coder/Dockerfile ai-coder/
+docker push sesiting/ai-coder:${tag}
 docker push sesiting/ai-coder:latest
 
-# 构建并推送 OP MCP Tools
-docker build -t sesiting/op-mcp:latest -f op-mcp/Dockerfile op-mcp/
+# 构建并推送 OP MCP Tools（同时打两个标签）
+docker build -t sesiting/op-mcp:${tag} -t sesiting/op-mcp:latest -f op-mcp/Dockerfile op-mcp/
+docker push sesiting/op-mcp:${tag}
 docker push sesiting/op-mcp:latest
 ```
 
