@@ -27,6 +27,7 @@ ENV=""
 COMMAND="up"
 ORG_ID="default"
 FLOW_ID="default"
+WORKFLOW_DOMAIN_URL=""
 
 # 解析命令
 if [[ $# -gt 0 && ! "$1" =~ ^- ]]; then
@@ -61,6 +62,10 @@ while [[ $# -gt 0 ]]; do
             ENV="$2"
             shift 2
             ;;
+        -w|--workflow-url)
+            WORKFLOW_DOMAIN_URL="$2"
+            shift 2
+            ;;
         -h|--help)
             echo "AI Flow Docker Compose 管理脚本"
             echo "用法: $0 [COMMAND] [OPTIONS]"
@@ -72,11 +77,12 @@ while [[ $# -gt 0 ]]; do
             echo "参数:"
             echo "  -o, --org     组织ID（默认: default）"
             echo "  -f, --flow    流程ID（默认: default）"
-            echo "  -p, --port    端口号（默认: 8000）"
-            echo "  -n, --name    项目名（可选）"
-            echo "  -l, --llms    是否使用内部 llms（默认: false）"
-            echo "  -e, --env     环境配置（dev/prod）"
-            echo "  -h, --help    显示帮助信息"
+            echo "  -p, --port        端口号（默认: 8000）"
+            echo "  -n, --name        项目名（可选）"
+            echo "  -l, --llms        是否使用内部 llms（默认: false）"
+            echo "  -e, --env         环境配置（dev/prod）"
+            echo "  -w, --workflow-url 工作流服务地址（默认: http://workflow-domain:8080）"
+            echo "  -h, --help        显示帮助信息"
             echo "示例:"
             echo "  $0 up                               # 使用默认值启动服务"
             echo "  $0 restart                          # 使用默认值重启服务"
@@ -134,6 +140,14 @@ else
     echo "⚠️  未找到 .env 文件，使用默认配置"
 fi
 
+# WORKFLOW_DOMAIN_URL：优先使用命令行参数，否则使用默认值（不从 .env 读取）
+if [[ -n "$WORKFLOW_DOMAIN_URL" ]]; then
+    # 使用命令行参数传递的值
+    :
+else
+    WORKFLOW_DOMAIN_URL="http://workflow-domain:8080"
+fi
+
 # 执行命令
 case "$COMMAND" in
     "up")
@@ -147,18 +161,18 @@ case "$COMMAND" in
         # 根据是否使用 llms 决定启动命令
         if [ "$USE_LLMS" = "true" ]; then
             echo "📡 启动服务 (含内部 llms)..."
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never"
-            docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --pull never
         else
             echo "📡 启动服务 (使用外部 llms)..."
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never"
-            docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --pull never
         fi
         
         # 检查启动状态
         sleep 3
         echo "🔍 检查服务状态..."
-        docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps
+        ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps
         echo "✅ 服务启动完成: ${PROJECT_NAME}"
         ;;
         
@@ -167,8 +181,8 @@ case "$COMMAND" in
         echo "   项目名: ${PROJECT_NAME}"
         echo "   环境配置: ${ENV} (${COMPOSE_FILE})"
         
-        echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
-        docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down
+        echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
+        ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down
         echo "✅ 服务已关闭: ${PROJECT_NAME}"
         ;;
         
@@ -179,12 +193,12 @@ case "$COMMAND" in
         
         if [ "$USE_LLMS" = "true" ]; then
             echo "📦 构建镜像 (含内部 llms)..."
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build"
-            docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build
         else
             echo "📦 构建镜像 (使用外部 llms)..."
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build"
-            docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build
         fi
         echo "✅ 镜像构建完成: ${PROJECT_NAME}"
         ;;
@@ -197,29 +211,29 @@ case "$COMMAND" in
         
         # 先停止并删除容器
         echo "🛑 停止服务..."
-        echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
-        docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down
+        echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down"
+        ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} down
         
         # 重新构建并启动服务（确保代码更新生效）
         echo "🔨 重新构建镜像..."
         if [ "$USE_LLMS" = "true" ]; then
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build"
-            docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} build
             echo "🚀 重新启动服务 (含内部 llms)..."
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --force-recreate"
-            docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --force-recreate
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --force-recreate"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} --profile llms -p ${PROJECT_NAME} up -d --force-recreate
         else
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build"
-            docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} build
             echo "🚀 重新启动服务 (使用外部 llms)..."
-            echo "🔧 执行命令: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --force-recreate"
-            docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --force-recreate
+            echo "🔧 执行命令: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --force-recreate"
+            ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} up -d --force-recreate
         fi
         
         # 检查重启状态
         sleep 3
         echo "🔍 检查服务状态..."
-        docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps
+        ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps
         echo "✅ 服务重启完成: ${PROJECT_NAME}"
         ;;
         
@@ -233,8 +247,8 @@ esac
 
 echo ""
 echo "📊 管理命令:"
-echo "   查看日志: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} logs -f"
-echo "   查看状态: docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps"
+echo "   查看日志: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} logs -f"
+echo "   查看状态: ORG_ID=${ORG_ID} FLOW_ID=${FLOW_ID} WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f ${COMPOSE_FILE} -p ${PROJECT_NAME} ps"
 echo "   停止服务: $0 down -o ${ORG_ID} -f ${FLOW_ID}"
 echo "   重启服务: $0 restart -o ${ORG_ID} -f ${FLOW_ID}"
 echo "   构建镜像: $0 build -o ${ORG_ID} -f ${FLOW_ID}"

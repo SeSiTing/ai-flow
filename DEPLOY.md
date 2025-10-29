@@ -34,6 +34,13 @@ docker push sesiting/op-mcp:latest
 
 ## 启动脚本
 
+### 使用前准备
+
+```bash
+# 赋予执行权限
+chmod +x run-compose.sh
+```
+
 ### run-compose.sh 命令
 
 | 命令 | 说明 | 示例 |
@@ -73,10 +80,12 @@ docker push sesiting/op-mcp:latest
 cat > .env << EOF
 ANTHROPIC_BASE_URL=http://external-llms:3009
 EOF
-./run-compose.sh up -o 001 -f 001 -e dev
+./run-compose.sh up -o 001 -f 001 -e dev -w http://workflow-domain-feature.test.blacklake.tech
 
 # 生产环境
-./run-compose.sh up -o 001 -f 001 -e prod
+./run-compose.sh up -o 001 -f 001 -e prod -w http://workflow-domain-feature.test.blacklake.tech
+
+./run-compose.sh up -o 10162960 -f 1761632221929163 -w http://workflow-domain-feature.test.blacklake.tech -e prod -p 9001
 ```
 
 ### 使用内部 llms
@@ -106,10 +115,10 @@ EOF
 ./run-compose.sh --help
 
 # 查看服务状态（使用默认值）
-docker compose -f docker-compose.yml -p ai-flow-default-default ps
+ORG_ID=default FLOW_ID=default WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f docker-compose.yml -p ai-flow-default-default ps
 
 # 查看日志（使用默认值）
-docker compose -f docker-compose.yml -p ai-flow-default-default logs -f
+ORG_ID=default FLOW_ID=default WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080} docker compose -f docker-compose.yml -p ai-flow-default-default logs -f
 
 # 停止服务（使用默认值）
 ./run-compose.sh down
@@ -137,6 +146,7 @@ docker compose -f docker-compose.yml -p ai-flow-default-default logs -f
 | `OPENROUTER_API_KEY` | LLMs API 密钥 | `sk-or-v1-xxxxx` |
 | `ANTHROPIC_BASE_URL` | LLMs 服务地址 | `http://llms:3000` |
 | `ANTHROPIC_API_KEY` | Claude API Key | `custom` |
+| `WORKFLOW_DOMAIN_URL` | 工作流服务地址 | `http://workflow-domain-feature.test.blacklake.tech/` |
 
 ## OP MCP Tools 独立部署
 

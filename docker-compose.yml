@@ -28,6 +28,7 @@ services:
     environment:
       - ORG_ID=${ORG_ID}
       - FLOW_ID=${FLOW_ID}
+      - WORKFLOW_DOMAIN_URL=${WORKFLOW_DOMAIN_URL:-http://workflow-domain:8080}
       - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-http://llms:3000}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-custom}
       - PROJECT_ROOT=/workspace
