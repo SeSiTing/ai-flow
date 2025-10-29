@@ -34,6 +34,8 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-custom}
       - PROJECT_ROOT=/workspace
       - CLAUDE_CONFIG_DIR=/workspace/code/flow/o_${ORG_ID}/f_${FLOW_ID}/.claude
+      # MCP 服务器配置
+      - MCP_SERVERS__OP__URL=${MCP_SERVERS__OP__URL:-http://op-mcp:8008}
     depends_on:
       llms:
         condition: service_healthy

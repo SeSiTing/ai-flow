@@ -168,34 +168,55 @@ curl http://localhost:8008/health
 
 ### 与 AI Coder 集成
 
-OP MCP Tools 是独立的 MCP 服务提供者，需要手动配置：
+OP MCP Tools 通过环境变量自动配置：
 
-1. **启动 OP MCP Tools 服务**
+#### 配置方式（推荐）
+
+1. **创建 .env 文件**
    ```bash
-   docker run -d --name op-mcp -p 8008:8008 op-mcp:latest
+   # 在项目根目录创建 .env 文件
+   # 配置 OP MCP 服务器地址
+   MCP_SERVERS__OP__URL=http://op-mcp:8008
    ```
 
-2. **在 AI Coder 容器中配置 MCP**
+2. **启动服务**
    ```bash
-   # 进入 AI Coder 容器
-   docker exec -it ai-coder-001-001 bash
-   
-   # 配置 MCP 服务器
-   claude mcp add-json op '{"type":"http","url":"http://op-mcp:8008"}'
+   # 使用 docker-compose 启动（自动加载 .env 文件）
+   ./run-compose.sh up -o 001 -f 001
    ```
 
-3. **验证配置**
-   ```bash
-   claude mcp list
-   ```
+#### 手动配置（不推荐）
+
+如需手动配置，进入容器执行：
+
+```bash
+# 进入 AI Coder 容器
+docker exec -it ai-coder-001-001 bash
+
+# 配置 MCP 服务器
+claude mcp add-json op '{"type":"http","url":"http://op-mcp:8008"}'
+
+# 验证配置
+claude mcp list
+```
 
 **注意**：如果 AI Coder 和 OP MCP Tools 在不同机器上，需要修改 URL 为实际的服务地址。
 
 ### 工具列表
 
-- `execute_sql_tool`：执行 SQL 查询
-- `query_api_info_tool`：查询 API 元数据
-- `generate_ids_tool`：生成唯一 ID
+配置成功后，工具名称格式为 `mcp__op__{工具名}`：
+
+- `mcp__op__generate_ids_tool` - 生成唯一 ID
+- `mcp__op__query_org_info` - 查询租户信息
+- `mcp__op__list_biz_event` - 查询业务事件
+- `mcp__op__query_workflow_definition` - 查询工作流定义
+- `mcp__op__query_workflow_instance_log_detail` - 查询工作流实例日志
+- `mcp__op__query_node_instance_log_tree` - 查询节点实例日志树
+- `mcp__op__query_node_instance_log_detail` - 查询节点实例日志详情
+- `mcp__op__query_meta_detail` - 查询元数据详情
+- `mcp__op__query_api_info` - 查询 API 信息
+- `mcp__op__query_integrated_connector` - 查询集成连接器
+- `mcp__op__query_connector_api_detail` - 查询连接器 API 详情
 
 ## 端口说明
 

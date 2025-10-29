@@ -108,6 +108,7 @@ open http://localhost:8000/docs
 | `ANTHROPIC_API_KEY` | Claude API Key（固定值） | `custom` |
 | `PROJECT_ROOT` | 工作目录根路径 | `/app/ai-coder` |
 | `OPENROUTER_API_KEY` | OpenRouter API 密钥（必需） | `sk-or-v1-xxxxx` |
+| `MCP_SERVERS__OP__URL` | OP MCP 服务器地址 | `http://op-mcp:8008` |
 
 ### 启动时动态参数（通过 -e 传递）
 
@@ -117,6 +118,25 @@ open http://localhost:8000/docs
 | `FLOW_ID` | 流程ID（多租户隔离） | `001` |
 
 **注意**：静态配置在 `.env` 文件中，动态参数通过 `docker run -e` 或命令行传递。
+
+### MCP 服务器配置（可选）
+
+通过环境变量配置多个 MCP 服务器，支持双下划线式层级配置：
+
+```bash
+# 最简单配置（只配置 URL，type 默认为 http）
+MCP_SERVERS__OP__URL=http://op-mcp:8008
+
+# 完整配置
+MCP_SERVERS__OP__TYPE=http
+MCP_SERVERS__OP__URL=http://op-mcp:8008
+MCP_SERVERS__OP__HEADERS={"x-api-key":"your-key"}
+
+# 配置多个服务器
+MCP_SERVERS__CUSTOM__URL=http://custom-mcp:9000
+```
+
+详细配置说明见 [DEPLOY.md](DEPLOY.md#op-mcp-tools-独立部署)。
 
 
 ## 📞 支持
