@@ -1,6 +1,8 @@
 # 忽略子项目目录
 llms/
 ai-coder/
+op-mcp/
+op-agent/
 
 # 生成的工作目录
 code/
