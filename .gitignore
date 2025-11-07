@@ -1,8 +1,8 @@
-# 忽略子项目目录
-llms/
-ai-coder/
-op-mcp/
-op-agent/
+# 忽略子项目目录（已改为 submodule，不再忽略）
+# llms/
+# ai-coder/
+# op-mcp/
+# op-plugin/  # 根目录的符号链接，不提交到 Git
 
 # 生成的工作目录
 code/
