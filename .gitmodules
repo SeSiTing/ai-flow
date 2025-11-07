@@ -1,0 +1,9 @@
+[submodule "ai-coder"]
+	path = ai-coder
+	url = git@github.com:SeSiTing/ai-coder.git
+[submodule "llms"]
+	path = llms
+	url = git@github.com:SeSiTing/llms.git
+[submodule "op-mcp"]
+	path = op-mcp
+	url = git@github.com:SeSiTing/op-mcp.git
