@@ -11,3 +11,6 @@
 [submodule "claude-code-sdk-python"]
 	path = claude-code-sdk-python
 	url = git@github.com:SeSiTing/claude-code-sdk-python.git
+[submodule "siti-claude-marketplace"]
+	path = siti-claude-marketplace
+	url = git@github.com:SeSiTing/siti-claude-marketplace.git
