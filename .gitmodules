@@ -1,6 +1,7 @@
 [submodule "ai-coder"]
 	path = ai-coder
 	url = git@github.com:SeSiTing/ai-coder.git
+	branch = main
 [submodule "llms"]
 	path = llms
 	url = git@github.com:SeSiTing/llms.git
@@ -8,9 +9,8 @@
 [submodule "op-mcp"]
 	path = op-mcp
 	url = git@github.com:SeSiTing/op-mcp.git
+	branch = main
 [submodule "claude-code-sdk-python"]
 	path = claude-code-sdk-python
 	url = git@github.com:SeSiTing/claude-code-sdk-python.git
-[submodule "siti-claude-marketplace"]
-	path = siti-claude-marketplace
-	url = git@github.com:SeSiTing/siti-claude-marketplace.git
+	branch = main
