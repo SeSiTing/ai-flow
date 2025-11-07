@@ -4,6 +4,10 @@
 [submodule "llms"]
 	path = llms
 	url = git@github.com:SeSiTing/llms.git
+	branch = dev
 [submodule "op-mcp"]
 	path = op-mcp
 	url = git@github.com:SeSiTing/op-mcp.git
+[submodule "claude-code-sdk-python"]
+	path = claude-code-sdk-python
+	url = git@github.com:SeSiTing/claude-code-sdk-python.git
