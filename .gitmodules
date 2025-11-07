@@ -4,6 +4,7 @@
 [submodule "llms"]
 	path = llms
 	url = git@github.com:SeSiTing/llms.git
+	branch = dev
 [submodule "op-mcp"]
 	path = op-mcp
 	url = git@github.com:SeSiTing/op-mcp.git
