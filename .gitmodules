@@ -14,3 +14,7 @@
 	path = claude-code-sdk-python
 	url = git@github.com:SeSiTing/claude-code-sdk-python.git
 	branch = main
+[submodule "claude-code-router"]
+	path = claude-code-router
+	url = git@github.com:fooooooork/claude-code-router.git
+	branch = main
