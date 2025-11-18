@@ -1,7 +1,7 @@
 [submodule "ai-coder"]
 	path = ai-coder
-	url = git@github.com:SeSiTing/ai-coder.git
-	branch = main
+	url = git@gitlab.blacklake.tech:daas/ai-coder.git
+	branch = dev
 [submodule "llms"]
 	path = llms
 	url = git@github.com:SeSiTing/llms.git
