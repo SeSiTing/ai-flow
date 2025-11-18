@@ -1,7 +1,7 @@
 [submodule "ai-coder"]
 	path = ai-coder
-	url = git@github.com:SeSiTing/ai-coder.git
-	branch = main
+	url = git@gitlab.blacklake.tech:daas/ai-coder.git
+	branch = dev
 [submodule "llms"]
 	path = llms
 	url = git@github.com:SeSiTing/llms.git
@@ -10,11 +10,11 @@
 	path = op-mcp
 	url = git@github.com:SeSiTing/op-mcp.git
 	branch = main
-[submodule "claude-code-sdk-python"]
-	path = claude-code-sdk-python
-	url = git@github.com:SeSiTing/claude-code-sdk-python.git
-	branch = main
 [submodule "claude-code-router"]
 	path = claude-code-router
 	url = git@github.com:fooooooork/claude-code-router.git
+	branch = main
+[submodule "claude-agent-sdk-python"]
+	path = claude-agent-sdk-python
+	url = git@github.com:SeSiTing/claude-agent-sdk-python.git
 	branch = main
