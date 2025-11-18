@@ -68,6 +68,20 @@ git add .gitmodules ai-coder llms op-mcp claude-code-router claude-agent-sdk-pyt
 git commit -m "chore: update submodules"
 ```
 
+### 添加新 Submodule
+
+```bash
+# 添加新的 submodule（会自动更新 .gitmodules 和添加到索引）
+git submodule add -b <branch> <repository-url> <path>
+
+# 示例：添加 claude-agent-sdk-python
+git submodule add -b main git@github.com:SeSiTing/claude-agent-sdk-python.git claude-agent-sdk-python
+
+# 提交新添加的 submodule
+git add .gitmodules claude-agent-sdk-python
+git commit -m "chore: add claude-agent-sdk-python submodule"
+```
+
 ## 🔐 环境配置
 
 **必需配置 .env 文件**：
