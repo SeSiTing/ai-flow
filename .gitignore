@@ -7,6 +7,9 @@
 # 生成的工作目录
 code/
 
+# 例外：允许 templates 目录下的所有内容（模板需要完整复制）
+!ai-coder/backend/templates/**
+
 # Python
 __pycache__/
 *.py[cod]
@@ -16,8 +19,6 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-# 例外：允许 templates 中的 dist
-!ai-coder/backend/templates/web_ant/default/dist/
 downloads/
 eggs/
 .eggs/
@@ -34,8 +35,6 @@ MANIFEST
 
 # Node.js
 node_modules/
-# 例外：允许 templates 中的 node_modules
-!ai-coder/backend/templates/web_ant/default/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
