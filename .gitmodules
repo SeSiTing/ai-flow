@@ -18,3 +18,7 @@
 	path = claude-agent-sdk-python
 	url = git@github.com:SeSiTing/claude-agent-sdk-python.git
 	branch = main
+[submodule "op-agent"]
+	path = op-agent
+	url = git@gitlab.blacklake.tech:daas/op-agent.git
+	branch = dev
