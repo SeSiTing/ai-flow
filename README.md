@@ -118,6 +118,8 @@ git submodule add -b <branch> <repository-url> <path>
 # 示例：添加 claude-agent-sdk-python
 git submodule add -b main git@github.com:SeSiTing/claude-agent-sdk-python.git claude-agent-sdk-python
 
+git submodule add -b dev git@gitlab.blacklake.tech:daas/op-agent.git op-agent
+
 # 提交新添加的 submodule
 git add .gitmodules claude-agent-sdk-python
 git commit -m "chore: add claude-agent-sdk-python submodule"
