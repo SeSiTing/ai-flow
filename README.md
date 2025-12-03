@@ -169,3 +169,19 @@ open http://localhost:8000/docs
 
 - 📧 邮箱: shensaiting@blacklake.cn
 - 🐛 问题反馈: [GitHub Issues](https://github.com/yourusername/ai-flow/issues)
+
+
+
+
+# 1. 修改 .gitmodules（手动编辑）
+
+# 2. 使用 git config 更新配置
+git config -f .gitmodules submodule.claude-agent-sdk-python.branch main
+
+# 3. 同步并更新
+git submodule sync
+git submodule update --remote claude-agent-sdk-python
+
+# 4. 提交
+git add .gitmodules claude-agent-sdk-python
+git commit -m "切换子模块分支"
