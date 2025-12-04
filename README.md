@@ -176,7 +176,7 @@ open http://localhost:8000/docs
 # 1. 修改 .gitmodules（手动编辑）
 
 # 2. 使用 git config 更新配置
-git config -f .gitmodules submodule.claude-agent-sdk-python.branch main
+git config -f .gitmodules submodule.claude-agent-sdk-python.branch dev
 
 # 3. 同步并更新
 git submodule sync
