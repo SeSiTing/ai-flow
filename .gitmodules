@@ -22,3 +22,11 @@
 	path = op-agent
 	url = git@gitlab.blacklake.tech:daas/op-agent.git
 	branch = dev
+[submodule "siti-claude-marketplace"]
+	path = siti-claude-marketplace
+	url = git@github.com:SeSiTing/siti-claude-marketplace.git
+	branch = dev
+[submodule "coder-templates"]
+	path = coder-templates
+	url = git@gitlab.blacklake.tech:daas/coder-templates.git
+	branch = dev
