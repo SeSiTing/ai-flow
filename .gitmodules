@@ -26,7 +26,7 @@
 	path = coder-templates
 	url = git@github.com:Blacklake-Tech/coder-templates.git
 	branch = dev
-[submodule "claude-marketplace"]
-	path = claude-marketplace
-	url = git@github.com:Blacklake-Tech/claude-marketplace.git
+[submodule "blacklake-claude-marketplace"]
+	path = blacklake-claude-marketplace
+	url = git@github.com:Blacklake-Tech/blacklake-claude-marketplace.git
 	branch = dev
