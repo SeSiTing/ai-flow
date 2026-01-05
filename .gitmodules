@@ -30,3 +30,6 @@
 	path = blacklake-claude-marketplace
 	url = git@github.com:Blacklake-Tech/blacklake-claude-marketplace.git
 	branch = dev
+[submodule "claude-agent-sdk-demos"]
+	path = claude-agent-sdk-demos
+	url = https://github.com/anthropics/claude-agent-sdk-demos.git
