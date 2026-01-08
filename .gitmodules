@@ -37,3 +37,7 @@
 	path = claude-code
 	url = https://github.com/anthropics/claude-code.git
 	branch = main
+[submodule "skills"]
+	path = skills
+	url = https://github.com/anthropics/skills.git
+	branch = main
