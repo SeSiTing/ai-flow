@@ -33,3 +33,7 @@
 [submodule "claude-agent-sdk-demos"]
 	path = claude-agent-sdk-demos
 	url = https://github.com/anthropics/claude-agent-sdk-demos.git
+[submodule "claude-code"]
+	path = claude-code
+	url = https://github.com/anthropics/claude-code.git
+	branch = main
