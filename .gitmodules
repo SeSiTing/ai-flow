@@ -48,3 +48,7 @@
 	path = superpowers
 	url = https://github.com/obra/superpowers.git
 	branch = main
+[submodule "ai-coder-gateway"]
+	path = ai-coder-gateway
+	url = git@gitlab.blacklake.tech:daas/ai-coder-gateway.git
+	branch = dev
