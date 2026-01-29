@@ -52,6 +52,11 @@
 	path = ai-coder-gateway
 	url = git@gitlab.blacklake.tech:daas/ai-coder-gateway.git
 	branch = dev
+[submodule "ai-coder-gateway"]
+	path = ai-coder-gateway
+	url = git@gitlab.blacklake.tech:daas/ai-coder-gateway.git
+	branch = dev
 [submodule "cc-switch"]
 	path = cc-switch
-	url = git@github.com:farion1231/cc-switch.git
+	url = https://github.com/farion1231/cc-switch.git
+	branch = main
