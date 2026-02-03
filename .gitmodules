@@ -60,3 +60,7 @@
 	path = cc-switch
 	url = https://github.com/farion1231/cc-switch.git
 	branch = main
+[submodule "everything-claude-code"]
+	path = everything-claude-code
+	url = https://github.com/affaan-m/everything-claude-code.git
+	branch = main
