@@ -30,5 +30,6 @@ traefik/acme.json
 # Docker
 .docker/
 
-# macOS
-.DS_Store
+# Claude Code
+.claude/logs/
+.claude/homunculus/
